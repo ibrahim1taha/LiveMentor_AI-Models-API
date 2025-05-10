@@ -7,13 +7,12 @@ from app.models.one_is_present import PersonDetector
 head_pose_estimator = HeadPoseEstimator()
 person_detector = PersonDetector()
 
-def decode_base64_image(image_data):
-    # image_data = base64.b64decode(base64_string)
+def arrBuff_to_npArr(image_data):
     np_arr = np.frombuffer(image_data, np.uint8)
     return cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
-def predict_from_image(img):
-    frame = decode_base64_image(img)
+def predict_from_image(image_data):
+    frame = arrBuff_to_npArr(image_data)
     focus_status = head_pose_estimator.estimate_pose(frame)
     person_status = person_detector.detect_person(frame)
     return {

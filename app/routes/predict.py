@@ -2,7 +2,7 @@ from fastapi import APIRouter, File, UploadFile
 from fastapi.responses import JSONResponse
 import base64
 
-from app.schemas.input import ImageInput
+
 from app.schemas.output import PredictionResult
 from app.services.prediction_service import predict_from_image
 

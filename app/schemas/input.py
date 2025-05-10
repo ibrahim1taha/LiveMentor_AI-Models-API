@@ -1,4 +1,5 @@
 from pydantic import BaseModel
 
-class ImageInput(BaseModel):
-    image_base64: str  # Base64-encoded frame
+class SendFrameInput(BaseModel):
+    user_id: str  
+    session_id: str  
