@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import math
+import time
 
 class HeadPoseEstimator:
     def __init__(self):
@@ -14,8 +15,11 @@ class HeadPoseEstimator:
             (-225.0, 170.0, -135.0),     # Left eye left corner
             (225.0, 170.0, -135.0),      # Right eye right corner
             (-150.0, -150.0, -125.0),    # Left Mouth corner
-            (150.0, -150.0, -125.0)      # Right mouth corner
+            (150.0, -150.0, -125.0)      
         ])
+
+        self.DISTRACTION_TIME = 5.0  # seconds
+        self.distraction_start_time = None
 
     def rotationMatrixToEulerAngles(self, R):
         sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
@@ -70,9 +74,38 @@ class HeadPoseEstimator:
                 pitch, yaw, roll = [math.degrees(angle) for angle in euler_angles]
 
                 if abs(yaw) < 45 and abs(pitch) < 45:
+                    self.distraction_start_time = None
                     return "Focused"
                 else:
-                    return "Distracted"
+                    if self.distraction_start_time is None:
+                        self.distraction_start_time = time.time()
+                        return "Checking_Focus"
+                    elif time.time() - self.distraction_start_time >= self.DISTRACTION_TIME:
+                        return "Distracted"
+                    else:
+                        return "Checking_Focus"
         
         return "No Face"
 
+
+cap = cv2.VideoCapture(0)
+pose_estimator = HeadPoseEstimator()
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    status = pose_estimator.estimate_pose(frame)
+    print("Status:", status)
+
+    
+    cv2.putText(frame, status, (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 2)
+    cv2.imshow("Head Pose Estimation", frame)
+
+    
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
