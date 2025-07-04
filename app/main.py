@@ -88,6 +88,15 @@ async def health_check():
         "message": "AI Focus API is running"
     }
 
+@app.get("/test")
+async def test_endpoint():
+    """Simple test endpoint to verify basic functionality"""
+    return {
+        "status": "success",
+        "message": "Basic API functionality is working",
+        "timestamp": "2024-01-01T00:00:00Z"
+    }
+
 # For Vercel deployment
 @app.get("/api/health")
 async def api_health_check():
