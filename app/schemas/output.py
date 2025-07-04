@@ -10,3 +10,15 @@ class PredictionResult(BaseModel):
     failed_models: List[str] = []
     error: bool = False
     message: Optional[str] = None
+
+class FrameResult(BaseModel):
+    id: str
+    result: PredictionResult
+
+class BatchPredictionResponse(BaseModel):
+    results: List[FrameResult]
+    total_processed: int
+    successful_frames: int
+    failed_frames: int
+    error: bool = False
+    message: Optional[str] = None
