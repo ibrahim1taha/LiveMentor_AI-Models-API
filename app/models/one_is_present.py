@@ -15,9 +15,7 @@ class PersonDetector:
         else:
             face_count = 0
 
-        if face_count > 1:
-            return "ALERT"
-        elif face_count == 1:
-            return "OK"
+        if face_count == 1:
+            return True  # One person present
         else:
-            return "NO_PERSON"
+            return False  # No person or multiple people

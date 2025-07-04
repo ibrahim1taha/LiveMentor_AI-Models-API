@@ -70,9 +70,9 @@ class HeadPoseEstimator:
                 pitch, yaw, roll = [math.degrees(angle) for angle in euler_angles]
 
                 if abs(yaw) < 45 and abs(pitch) < 45:
-                    return "Focused"
+                    return True  # Focused
                 else:
-                    return "Distracted"
+                    return False  # Distracted
         
-        return "No Face"
+        return False  # No Face - not focused
 
