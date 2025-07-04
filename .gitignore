@@ -62,3 +62,44 @@ coverage.xml
 
 # Local environment variables
 .env
+
+# AI/ML specific files
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.h5
+*.pb
+*.ckpt
+*.safetensors
+*.bin
+
+# Data directories
+data/
+datasets/
+models/
+checkpoints/
+weights/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# API keys and secrets
+*.key
+*.pem
+secrets.json
+config.json
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Cache directories
+.cache/
+__pycache__/
+.pytest_cache/
