@@ -9,7 +9,50 @@ A FastAPI-based API that uses multiple AI models to detect focus-related behavio
 - **Batch Processing**: Process multiple frames in a single request
 - **CORS Enabled**: Ready for frontend integration
 - **Comprehensive Error Handling**: Detailed error responses and logging
-- **Vercel Ready**: Configured for easy deployment to Vercel
+- **Production Ready**: Configured for deployment to various platforms (Vercel, EC2, Render)
+
+## System Requirements
+
+### Minimum Requirements
+
+- **CPU**: 4 cores (recommended: 8+ cores)
+- **RAM**: 8GB (recommended: 16GB+)
+- **Storage**: 20GB free space
+- **GPU**: Optional but recommended for faster inference (NVIDIA GPU with CUDA support)
+- **OS**: Ubuntu 20.04 LTS or later / Amazon Linux 2
+
+### Software Versions
+
+- **Python**: 3.11.x
+- **CUDA**: 11.8+ (if using GPU)
+- **Docker**: 20.10+ (optional)
+
+## Technology Stack & Versions
+
+### Core Framework
+
+- **FastAPI**: 0.104.1
+- **Uvicorn**: 0.34.2
+- **Python**: 3.11.x
+
+### AI/ML Libraries
+
+- **PyTorch**: 2.7.1
+- **TorchVision**: 0.22.1
+- **TorchAudio**: 2.7.1
+- **OpenCV**: 4.11.0.86
+- **Ultralytics**: 8.3.160
+- **MediaPipe**: 0.10.21
+- **NumPy**: 1.26.4
+- **Pandas**: 2.3.0
+- **SciPy**: 1.15.2
+
+### Utility Libraries
+
+- **Pydantic**: 2.11.4
+- **Pillow**: 11.2.1
+- **Requests**: 2.31.0
+- **Matplotlib**: 3.10.1
 
 ## API Endpoints
 
@@ -149,66 +192,68 @@ Run the test script to verify the API:
 python test_batch_api.py
 ```
 
-## Deployment to Vercel
+## Deployment Information for DevOps
 
-1. Install Vercel CLI:
+### Required Ports
 
-```bash
-npm i -g vercel
-```
+- **Application**: 8000 (default for FastAPI/Uvicorn)
+- **HTTP**: 80 (if using reverse proxy)
+- **HTTPS**: 443 (if using SSL/TLS)
 
-2. Deploy:
-
-```bash
-vercel
-```
-
-3. For production deployment:
+### Main Run Command
 
 ```bash
-vercel --prod
+uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-## Environment Variables
+### Process Management (Recommended)
 
-No environment variables are required for basic functionality. The API is configured to work out of the box.
+```bash
+pm2 start uvicorn --name "ai-focus-api" -- app.main:app --host 0.0.0.0 --port 8000
+pm2 save
+pm2 startup
+```
 
-## Error Handling
+### Reverse Proxy (Nginx) Example
 
-The API includes comprehensive error handling:
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
 
-- **400 Bad Request**: Invalid input (wrong file type, file too large, invalid JSON)
-- **422 Validation Error**: Request validation failures
-- **500 Internal Server Error**: Unexpected server errors
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 
-All errors return structured JSON responses with error details.
+### Health Check Endpoint
 
-## CORS Configuration
+- `GET /health` or `GET /api/health`
 
-CORS is enabled for all origins to allow frontend integration. In production, you may want to restrict this to specific domains.
+### Monitoring & Logs
 
-## File Upload Limits
+```bash
+pm2 status
+pm2 logs ai-focus-api
+pm2 monit
+```
 
-- **Single prediction**: Maximum file size 10MB
-- **Batch prediction**: Maximum 10 frames per request, 10MB per frame
-- **Supported formats**: All image formats (JPEG, PNG, GIF, etc.)
+### System Requirements (Summary)
 
-## Model Failure Handling
+- **Python**: 3.11.x
+- **RAM**: 8GB+ (16GB+ recommended)
+- **CPU**: 4+ cores
+- **GPU**: Optional (CUDA 11.8+)
 
-If any individual model fails during prediction:
+### Environment Variables
 
-- Other models continue to work
-- Failed models return `null` in the response
-- The `failed_models` array lists which models failed
-- The `successful_models` array lists which models worked
-- The API still returns a successful response with available results
+- None required for default operation
 
-This ensures the API remains functional even if some models encounter issues.
+---
 
-## Batch Processing Features
-
-- **Parallel Processing**: Each frame is processed independently
-- **Fault Tolerance**: Individual frame failures don't affect other frames
-- **Detailed Reporting**: Complete status for each frame and overall batch
-- **Size Limits**: Maximum 10 frames per batch request
-- **Base64 Encoding**: Images must be base64 encoded in the JSON payload
+_For all other details (dependencies, backup, troubleshooting, etc.), see the rest of this README._
