@@ -1,10 +1,10 @@
 # AI Focus Detection API
 
-A FastAPI-based API that uses multiple AI models to detect focus-related behaviors from images, including head pose estimation, person detection, blocked objects detection, and sleep detection.
+A FastAPI-based API that uses AI models to detect focus-related behaviors from images, including head pose estimation and person detection.
 
 ## Features
 
-- **Multi-Model Architecture**: Uses 4 different AI models for comprehensive analysis
+- **Multi-Model Architecture**: Uses 2 different AI models for comprehensive analysis
 - **Fault-Tolerant**: If one model fails, others continue to work and return results
 - **Batch Processing**: Process multiple frames in a single request
 - **CORS Enabled**: Ready for frontend integration
@@ -15,16 +15,14 @@ A FastAPI-based API that uses multiple AI models to detect focus-related behavio
 
 ### Minimum Requirements
 
-- **CPU**: 4 cores (recommended: 8+ cores)
-- **RAM**: 8GB (recommended: 16GB+)
-- **Storage**: 20GB free space
-- **GPU**: Optional but recommended for faster inference (NVIDIA GPU with CUDA support)
+- **CPU**: 2 cores (recommended: 4+ cores)
+- **RAM**: 4GB (recommended: 8GB+)
+- **Storage**: 10GB free space
 - **OS**: Ubuntu 20.04 LTS or later / Amazon Linux 2
 
 ### Software Versions
 
 - **Python**: 3.11.x
-- **CUDA**: 11.8+ (if using GPU)
 - **Docker**: 20.10+ (optional)
 
 ## Technology Stack & Versions
@@ -37,22 +35,15 @@ A FastAPI-based API that uses multiple AI models to detect focus-related behavio
 
 ### AI/ML Libraries
 
-- **PyTorch**: 2.7.1
-- **TorchVision**: 0.22.1
-- **TorchAudio**: 2.7.1
 - **OpenCV**: 4.11.0.86
-- **Ultralytics**: 8.3.160
 - **MediaPipe**: 0.10.21
 - **NumPy**: 1.26.4
-- **Pandas**: 2.3.0
-- **SciPy**: 1.15.2
 
 ### Utility Libraries
 
 - **Pydantic**: 2.11.4
 - **Pillow**: 11.2.1
 - **Requests**: 2.31.0
-- **Matplotlib**: 3.10.1
 
 ## API Endpoints
 
@@ -104,17 +95,10 @@ Upload a single image file using multipart form data.
       "result": {
         "is_focus": true,
         "is_person": true,
-        "is_have_thing": false,
-        "is_sleep": false,
-        "successful_models": [
-          "head_pose",
-          "person_detection",
-          "blocked_things",
-          "sleep_detection"
-        ],
+        "successful_models": ["head_pose", "person_detection"],
         "failed_models": [],
         "error": false,
-        "message": "Successfully processed with 4 models"
+        "message": "Successfully processed with 2 models"
       }
     },
     {
@@ -122,12 +106,10 @@ Upload a single image file using multipart form data.
       "result": {
         "is_focus": null,
         "is_person": true,
-        "is_have_thing": null,
-        "is_sleep": false,
-        "successful_models": ["person_detection", "sleep_detection"],
-        "failed_models": ["head_pose", "blocked_things"],
+        "successful_models": ["person_detection"],
+        "failed_models": ["head_pose"],
         "error": false,
-        "message": "Successfully processed with 2 models"
+        "message": "Successfully processed with 1 model"
       }
     }
   ],
@@ -145,17 +127,10 @@ Upload a single image file using multipart form data.
 {
   "is_focus": true,
   "is_person": true,
-  "is_have_thing": false,
-  "is_sleep": false,
-  "successful_models": [
-    "head_pose",
-    "person_detection",
-    "blocked_things",
-    "sleep_detection"
-  ],
+  "successful_models": ["head_pose", "person_detection"],
   "failed_models": [],
   "error": false,
-  "message": "Successfully processed with 4 models"
+  "message": "Successfully processed with 2 models"
 }
 ```
 
@@ -163,8 +138,6 @@ Upload a single image file using multipart form data.
 
 1. **Head Pose Estimation** - Detects if person is focused/attentive
 2. **Person Detection** - Detects if a person is present in the image
-3. **Blocked Things Detection** - Detects if objects are blocking the view
-4. **Sleep Detection** - Detects if person appears to be sleeping
 
 ## Local Development
 
@@ -198,7 +171,6 @@ python test_batch_api.py
 
 - **Application**: 8000 (default for FastAPI/Uvicorn)
 - **HTTP**: 80 (if using reverse proxy)
-- **HTTPS**: 443 (if using SSL/TLS)
 
 ### Main Run Command
 
@@ -246,9 +218,9 @@ pm2 monit
 ### System Requirements (Summary)
 
 - **Python**: 3.11.x
-- **RAM**: 8GB+ (16GB+ recommended)
-- **CPU**: 4+ cores
-- **GPU**: Optional (CUDA 11.8+)
+- **RAM**: 4GB+ (8GB+ recommended)
+- **CPU**: 2+ cores (4+ recommended)
+- **Storage**: 10GB free space
 
 ### Environment Variables
 
