@@ -10,14 +10,10 @@ try:
     import numpy as np
     from app.models.head_pose_estimation import HeadPoseEstimator
     from app.models.one_is_present import PersonDetector
-    from app.models.blocked_things import BlockedThingsDetector
-    from app.models.sleep_detector import SleepDetector
     
     # Initialize models
     head_pose_estimator = HeadPoseEstimator()
     person_detector = PersonDetector()
-    blocked_things_detector = BlockedThingsDetector()
-    sleep_detector = SleepDetector()
     
     MODELS_AVAILABLE = True
     logger.info("All AI models loaded successfully")
@@ -28,8 +24,6 @@ except ImportError as e:
     # Set models to None to avoid errors
     head_pose_estimator = None
     person_detector = None
-    blocked_things_detector = None
-    sleep_detector = None
 
 def arrBuff_to_npArr(image_data):
     """Convert image buffer to numpy array"""
@@ -62,8 +56,6 @@ def predict_from_image(image_data):
             return {
                 "is_focus": True,  # Mock result
                 "is_person": True,  # Mock result
-                "is_have_thing": False,  # Mock result
-                "is_sleep": False,  # Mock result
                 "successful_models": ["mock_model"],
                 "failed_models": []
             }
@@ -74,8 +66,6 @@ def predict_from_image(image_data):
             return {
                 "is_focus": None,
                 "is_person": None,
-                "is_have_thing": None,
-                "is_sleep": None,
                 "successful_models": [],
                 "failed_models": ["image_processing"]
             }
@@ -84,8 +74,6 @@ def predict_from_image(image_data):
         result = {
             "is_focus": None,
             "is_person": None,
-            "is_have_thing": None,
-            "is_sleep": None,
             "successful_models": [],
             "failed_models": []
         }
@@ -114,30 +102,6 @@ def predict_from_image(image_data):
                 result["successful_models"].append("person_detection")
             else:
                 result["failed_models"].append("person_detection")
-        
-        if blocked_things_detector:
-            blocked_result = safe_model_prediction(
-                blocked_things_detector.detect_blocked_things, 
-                frame, 
-                "Blocked Things Detection"
-            )
-            if blocked_result is not None:
-                result["is_have_thing"] = blocked_result
-                result["successful_models"].append("blocked_things")
-            else:
-                result["failed_models"].append("blocked_things")
-        
-        if sleep_detector:
-            sleep_result = safe_model_prediction(
-                sleep_detector.detect_sleep, 
-                frame, 
-                "Sleep Detection"
-            )
-            if sleep_result is not None:
-                result["is_sleep"] = sleep_result
-                result["successful_models"].append("sleep_detection")
-            else:
-                result["failed_models"].append("sleep_detection")
         
         # Log summary
         logger.info(f"Prediction completed. Successful: {len(result['successful_models'])}, Failed: {len(result['failed_models'])}")
