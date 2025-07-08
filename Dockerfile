@@ -1,33 +1,17 @@
-# === Builder Stage ===
-FROM python:3.11-slim AS builder
-
-# Install build dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libffi-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-# Install Python packages into a temp location
-COPY requirements.txt .
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
-
-# === Final Stage ===
+# Use official Python image
 FROM python:3.11-slim
 
-ENV PYTHONUNBUFFERED=1
-
-# Set working directory
+# Set work directory
 WORKDIR /app
 
-# Copy installed packages from builder stage
-COPY --from=builder /install /usr/local
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application source
+# Copy source code
 COPY . .
 
-# Expose FastAPI port
+# Expose the port
 EXPOSE 8000
 
 # Run the app with uvicorn
