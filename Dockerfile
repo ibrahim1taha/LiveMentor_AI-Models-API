@@ -1,35 +1,34 @@
-# === Build Stage ===
-FROM python:3.11-alpine AS builder
+# === Builder Stage ===
+FROM python:3.11-slim AS builder
 
 # Install build dependencies
-RUN apk add --no-cache gcc musl-dev libffi-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Copy dependencies file
+# Install Python packages into a temp location
 COPY requirements.txt .
-
-# Install dependencies into /install
-RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 # === Final Stage ===
-FROM python:3.11-alpine
+FROM python:3.11-slim
 
-# Set environment variables
 ENV PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
 
-# Copy dependencies from builder
+# Copy installed packages from builder stage
 COPY --from=builder /install /usr/local
 
-# Copy app source
+# Copy application source
 COPY . .
 
-# Expose port
+# Expose FastAPI port
 EXPOSE 8000
 
-# Run the app
+# Run the app with uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
